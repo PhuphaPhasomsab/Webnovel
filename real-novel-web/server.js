@@ -62,6 +62,7 @@ function requireLogin(req, res, next) {
   const worksRouter = require('./routes/works');
   const readerRouter = require('./routes/reader');
   const resetPasswordRouter = require('./routes/resetpassword');
+  const accountRouter = require('./routes/account');
 
   app.use("/", resetPasswordRouter);
   
@@ -78,6 +79,7 @@ function requireLogin(req, res, next) {
   app.use('/payment', requireLogin, paymentRouter);
   app.use('/topup', requireLogin, topupRouter);
   app.use('/coin', requireLogin, coinRouter);
+  app.use('/account', requireLogin, accountRouter);
 
   app.use(async(req,res)=>{
     const books = await Book.find().sort({ rank: 1 });
