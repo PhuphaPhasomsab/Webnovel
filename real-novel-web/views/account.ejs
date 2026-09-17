@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <title><%= title || "บัญชีของฉัน" %></title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/main.css">
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light" style="height: 125px;" id="navbar">
+    <div class="container-fluid row">
+      <a class="navbar-brand d-flex align-items-center col-1" href="/">
+        <img src="/images/logo.png" alt="logo" style="height: 40px;">
+        <span class="ms-2">Ei Novel</span>
+      </a>
+      <div style="display: flex;" class="col-3">
+        <div class="row">
+          <img class="col-3" src="/images/search.png" alt="search" style="height: 40px;">
+          <form action="/search" class="col-9" id="search" style="display: flex;justify-content: center;">
+            <input class="rounded-pill" type="search" name="q" id="search">
+          </form>
+        </div>
+      </div>
+      <div class="collapse navbar-collapse justify-content-center col-6" id="navbarNav-Catagory">
+        <ul class="navbar-nav">
+          <% categories.forEach(category=> { %>
+            <li class="nav-item me-3">
+              <a class="nav-link" href="/category/<%= encodeURIComponent(category) %>">
+                <%= category %>
+              </a>
+            </li>
+            <% }); %>
+        </ul>
+      </div>
+      <div class="collapse navbar-collapse justify-content-end col-2" id="navbarNav-user">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/topup">
+              <button class="rounded-pill"
+                style="color: rgb(0, 0, 0); background-color: gold; display: flex; justify-content: center; align-items: center;height: 30px;">
+                <img src="/images/coin.png" alt="pic-coin" class="img-fluid" style="height: 30px;">
+                <span><%= coins || 0 %></span>
+              </button>
+            </a>
+          </li>
+          <% if (!user) { %>
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/login">
+                <button class="rounded-pill" style="color: white; background-color: black;">
+                  Login
+                </button>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#" data-bs-toggle="modal"
+                data-bs-target="#settingsModal">
+                <button class="rounded-pill" style="color: white; background-color: gray;">
+                  ⚙️
+                </button>
+              </a>
+            </li>
+            <% } else { %>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                  <button class="rounded-pill" style="color: white; background-color: black;">
+                    Profile (<%= user.username %>)
+                  </button>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="/account">Account</a></li>
+                  <li><a class="dropdown-item" href="/sell">Writer</a></li>
+                  <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                      data-bs-target="#settingsModal">Settings</a></li>
+                  <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                </ul>
+              </li>
+              <% } %>
+        </ul>
+      </div>
+  </nav>
+
+  <main class="container my-4">
+    <h3 class="mb-4 fw-bold">บัญชีของฉัน</h3>
+
+    <!-- Profile overview -->
+    <div class="row g-4">
+      <div class="col-12 col-md-4">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body d-flex flex-column align-items-center text-center">
+            <img id="profImg" class="profImg border rounded-circle mb-3" alt="avatar"
+              src="https://freesvg.org/img/abstract-user-flat-4.png"
+              style="width: 130px; height: 130px; object-fit: cover; cursor: pointer;">
+            <input id="profFile" type="file" accept="image/*" style="display:none;">
+            <h5 class="card-title fw-bold"><%= user.username %></h5>
+            <p class="text-muted"><%= user.email %></p>
+            <hr class="w-100">
+            <div class="d-flex justify-content-around w-100">
+              <div>
+                <div class="fw-bold fs-5"><%= coins || 0 %></div>
+                <div class="text-muted small">coins</div>
+              </div>
+              <div>
+                <div class="fw-bold fs-5"><%= user.role || 'user' %></div>
+                <div class="text-muted small">role</div>
+              </div>
+            </div>
+            <a href="/topup" class="btn btn-warning rounded-pill mt-3 w-100">
+              <img src="/images/coin.png" alt="" style="height: 1.3rem;"> เติมเหรียญ
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit profile -->
+      <div class="col-12 col-md-8">
+        <div class="card shadow-sm mb-4">
+          <div class="card-body">
+            <h5 class="card-title mb-3">แก้ไขข้อมูลส่วนตัว</h5>
+            <form id="profileForm">
+              <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" id="username" name="username" class="form-control rounded-pill"
+                  value="<%= user.username %>">
+                <small id="usernameFeedback" class="form-text"></small>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-control rounded-pill" value="<%= user.email %>">
+                <small id="emailFeedback" class="form-text"></small>
+              </div>
+              <button type="submit" class="btn btn-primary rounded-pill">บันทึกข้อมูล</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Change password -->
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h5 class="card-title mb-3">เปลี่ยนรหัสผ่าน</h5>
+            <form id="passwordForm">
+              <div class="mb-3">
+                <label for="currentPassword" class="form-label">รหัสผ่านปัจจุบัน</label>
+                <input type="password" id="currentPassword" name="currentPassword" class="form-control rounded-pill">
+              </div>
+              <div class="mb-3">
+                <label for="newPassword" class="form-label">รหัสผ่านใหม่</label>
+                <input type="password" id="newPassword" name="newPassword" class="form-control rounded-pill">
+              </div>
+              <div class="mb-3">
+                <label for="confirmPassword" class="form-label">ยืนยันรหัสผ่านใหม่</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control rounded-pill">
+              </div>
+              <button type="submit" class="btn btn-primary rounded-pill">เปลี่ยนรหัสผ่าน</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Settings Modal -->
+  <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-4 shadow" id="settings">
+        <div class="modal-header">
+          <h5 class="modal-title" id="settingsModalLabel">การตั้งค่าเว็บไซต์</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="ปิด"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">ขนาดตัวอักษร</label>
+            <select id="fontSizeSelect" class="form-select rounded-pill">
+              <option value="14px">เล็ก</option>
+              <option value="16px" selected>ปกติ</option>
+              <option value="20px">ใหญ่</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Font</label>
+            <select id="fontFamilySelect" class="form-select rounded-pill">
+              <option value="Arial, sans-serif" selected>Sans-serif</option>
+              <option value="Georgia, serif">Serif</option>
+              <option value="Courier New, monospace">Monospace</option>
+            </select>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="themeSwitch">
+            <label class="form-check-label" for="themeSwitch">โหมดมืด</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary rounded-pill" data-bs-dismiss="modal">ปิด</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-light text-dark mt-5" id="footer">
+    <div class="container py-4">
+      <div class="row">
+        <div class="col-md-4">
+          <h5>About Us</h5>
+          <p>เว็บไซต์สำหรับติดตามนิยายแนวต่าง ๆ และข่าวสารเกี่ยวกับเรื่องโปรดของคุณ</p>
+        </div>
+        <div class="col-md-4">
+          <h5>Links</h5>
+          <ul class="list-unstyled">
+            <li><a href="#" class="text-decoration-none">Romantic</a></li>
+            <li><a href="#" class="text-decoration-none">Fantasy</a></li>
+            <li><a href="#" class="text-decoration-none">Mystery</a></li>
+            <li><a href="#" class="text-decoration-none">Action</a></li>
+          </ul>
+        </div>
+        <div class="col-md-4">
+          <h5>Contact</h5>
+          <p>Email: websiteeinovel@gmail.com</p>
+          <p>Phone: +66 123 456 789</p>
+        </div>
+      </div>
+      <div class="text-center mt-3">
+        &copy; 2025 MySite. All rights reserved.
+      </div>
+    </div>
+  </footer>
+
+  <script src="/js/settings.js"></script>
+  <script src="/js/uploadProfile.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // เช็ค username ซ้ำ (แบบเดียวกับหน้า register)
+    const usernameInput = document.getElementById("username");
+    const usernameFeedback = document.getElementById("usernameFeedback");
+    let isUsernameExist = false;
+    let timeoutUsername = null;
+    usernameInput.addEventListener("input", () => {
+      clearTimeout(timeoutUsername);
+      timeoutUsername = setTimeout(async () => {
+        const username = usernameInput.value.trim();
+        if (!username || username === "<%= user.username %>") {
+          usernameFeedback.textContent = "";
+          isUsernameExist = false;
+          return;
+        }
+        try {
+          const res = await fetch(`/check-username?username=${encodeURIComponent(username)}`);
+          const data = await res.json();
+          if (data.exists) {
+            usernameFeedback.textContent = "Username นี้มีคนใช้แล้ว!";
+            usernameFeedback.style.color = "red";
+            isUsernameExist = true;
+          } else {
+            usernameFeedback.textContent = "Username สามารถใช้ได้";
+            usernameFeedback.style.color = "green";
+            isUsernameExist = false;
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }, 500);
+    });
+
+    // ส่งฟอร์มแก้ไขข้อมูล
+    const profileForm = document.getElementById("profileForm");
+    profileForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (isUsernameExist) {
+        alert("Username นี้ถูกใช้แล้ว");
+        return;
+      }
+      const formData = new FormData(profileForm);
+      try {
+        const res = await fetch("/account/update-profile", { method: "POST", body: formData });
+        const data = await res.json();
+        if (res.ok) {
+          alert(data.msg);
+          window.location.reload();
+        } else {
+          alert(data.msg);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
+
+    // ส่งฟอร์มเปลี่ยนรหัสผ่าน
+    const passwordForm = document.getElementById("passwordForm");
+    passwordForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const newPassword = document.getElementById("newPassword").value;
+      const confirmPassword = document.getElementById("confirmPassword").value;
+      if (newPassword.length < 6) {
+        alert("รหัสผ่านใหม่ต้องยาวอย่างน้อย 6 ตัวอักษร");
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        alert("รหัสผ่านใหม่ไม่ตรงกัน");
+        return;
+      }
+      const formData = new FormData(passwordForm);
+      try {
+        const res = await fetch("/account/change-password", { method: "POST", body: formData });
+        const data = await res.json();
+        if (res.ok) {
+          alert(data.msg);
+          passwordForm.reset();
+        } else {
+          alert(data.msg);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+
+</html>
