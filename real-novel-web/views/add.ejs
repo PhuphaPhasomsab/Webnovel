@@ -1,0 +1,34 @@
+<%- include('includes/head.ejs') %>
+<%- include('includes/main_header.ejs') %>
+
+<div class="d-flex vw-100 min-vh-100">
+    <!-- ฝั่งเมนู -->
+    <aside class="w-25 flex-grow-1 d-flex flex-column" style="background-color: rgb(62, 62, 68);">
+        <!-- กลับไปหน้าหลักของนักเขียน -->
+        <div class="d-flex">
+            <button onclick="window.location.href='/'" class="flex-fill text-start border-0 py-1 fs-6 border-buttom">&larr; กลับไปหน้าจัดการงานเขียน</button>
+        </div>
+        <!-- แถบตั้งค่าเรื่อง -->
+            <div class="d-flex h-auto">
+            <button id="novSetting_btn" class="flex-fill text-start border-0 py-1 fs-5">ตั้งค่าข้อมูลของเรื่อง</button>
+            </div>
+        <!-- แถบตอน -->
+        <div class="d-flex justify-content-between align-items-center h-auto bg-dark text-light p-2">
+            <h5 id="totalEPs">ตอนทั้งหมด (<%= totalEp %>)</h5>
+            <button id="moreEp" class="btn btn-light btn-sm">เพิ่มตอนใหม่</button>
+        </div>
+        <!-- ลิสต์ตอนทั้งหมด -->
+        <div id="epList" class="flex-grow-1 overflow-auto d-flex flex-column p-2 gap-2">
+        </div>
+    </aside>
+
+    <!-- ฝั่งแสดงผล -->
+    <main id="rightScreen" class="w-75 min-vh-100 d-flex flex-column">
+        
+    </main>
+</div>
+
+<script src="/js/add.js"></script>
+<script src="/js/uploadImage.js"></script>
+<script src="/js/rating.js"></script>
+<%- include('includes/footer.ejs') %>
